@@ -13,6 +13,35 @@ More information on the Stargazer library can be found here:
 Stargazer is a great package to make regression tables. However, the current version (5.2.2) has one flaw. When specifying two `omit` and `omit.labels` arguments it sometimes produces wrong outputs in the rows that indicate whether the variables were omitted. Let me give you a code example in R to visualize and replicate the error:
 Imagine you have the following data:
 ```
+set.seed(42)
+x <- rnorm(100)
+e <- rnorm(100, mean = 0, sd = 10)
+y <- x*1.5+e
+countries <- sample(c("CAN", "GRC", "PRT", "THA", "NZL"), size=100, replace=T)
+birth_cohorts <- sample(c("1980", "1990", "2000", "2010"), size=100, replace=T)
+```
+where y is your dependent variable, x your explanatory variable, and countries and birth_cohorts are categorical variables which you want to include in your regressions as fixed effects. Next, you would set up 4 different models from model`1` to `4` including more fixed effects. This could look like this:
+```
+model1 <- lm(y ~ x)
+model2 <- lm(y ~ x + countries - 1)
+model3 <- lm(y ~ x + birth_cohorts - 1)
+model4 <- lm(y ~ x + countries + birth_cohorts - 1)
+```
+Of course, you want to not only look at your regression models in R (how boring), but also want to create some beautifully formatted LaTeX tables with Stargazer. This could look like this:
+```
+stargazer(model1, model2, model3, model4,
+          type = "text")
+```
+But, omg, this regression table has so many rows, and actually I am only interested in the coefficient for x. How annoying! That's why you would specify the `omit` and `omit.labels` parameters. When entering them, the dummy variables that you have included in the regression do not get shown in the regression table. Pretty cool. This is how the code would look like:
+```
+stargazer(model1, model2, model3, model4,
+          type = "text",
+          omit = c("countries", "birth_cohorts"),
+          omit.labels = c("Country-fixed effects", "Cohort-fixed effects"))
+```
+
+And this shows the `output`:
+```
 
 ```
 
