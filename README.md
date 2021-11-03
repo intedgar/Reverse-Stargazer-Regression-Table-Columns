@@ -142,3 +142,11 @@ close(fileConn)```
     1. The filepath where you have saved the .txt files that include the latex code for the regression tables. For example, your filepath could look like this: `C:/your/file/path/`. You don't have to add the actual file names in the path.
     2. The filepath where you want to save the updated .txt files. **Attention**: If using the same filepath as where the old .txt files were saved, they will be overwritten.
 * That's it. Enjoy your Regression Tables with reversed column order.
+
+## Some comments
+* If executing the python script throws you an `IndexError: list index out of range`: most probably because in the file path you have selected are .txt files other than the ones that contain Regression Tables
+* I've tested the script for 
+          * `lm` and `ivreg()` regression models
+          * For omitting two or three fixed-effects variables from the Regression Tables as well as
+          * For 4 to 8 columns in the regression tables
+* If you would like to contribute on how to improve the code or make it more robust, feel free to drop a comment
