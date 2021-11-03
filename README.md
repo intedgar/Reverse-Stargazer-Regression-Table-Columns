@@ -102,7 +102,7 @@ Note:                                                                       *p<0
 ```
 
 However, this leaves you with the issue that the models do not appear in the order that you originally wanted them to appear in the regression table. This is where the code from this repository comes into play. `reverse_stargazer_table.py` is a Python script that can reverse multiple text files containing LaTeX code and reverse its columns such that the models will appear in the LaTeX Regression Table as originally intended and without the buggy `Yes`/`No` values.
-The final output after having run `reverse_stargazer_table.py` to reverse the columns is a text file with LaTeX code that if you include into a LaTeX file would produce a LaTeX regression table similar to the following output:
+The final output after having run `reverse_stargazer_table.py` to reverse the columns is a text file with LaTeX code that if you include into a LaTeX file would produce a LaTeX regression table similar to the following output (but obviously in beautiful LaTeX format):
 ```
 =======================================================================================================
                                                      Dependent variable:                               
