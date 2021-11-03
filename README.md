@@ -40,22 +40,105 @@ stargazer(model1, model2, model3, model4,
           omit.labels = c("Country-fixed effects", "Cohort-fixed effects"))
 ```
 
-And this shows the `output`:
+And it gives the following `Output`:
+```
+=======================================================================================================
+                                                     Dependent variable:                               
+                      ---------------------------------------------------------------------------------
+                                                              y                                        
+                              (1)                  (2)                 (3)                 (4)         
+-------------------------------------------------------------------------------------------------------
+x                           1.772**              1.671*              1.703*               1.587*       
+                            (0.877)              (0.866)             (0.868)             (0.853)       
+                                                                                                       
+Constant                     -0.884                                                                    
+                            (0.909)                                                                    
+                                                                                                       
+-------------------------------------------------------------------------------------------------------
+Country-fixed effects          No                  Yes                 No                  Yes         
+Cohort-fixed effects           No                  No                  Yes                  No         
+-------------------------------------------------------------------------------------------------------
+Observations                  100                  100                 100                 100         
+R2                           0.040                0.120               0.097               0.177        
+Adjusted R2                  0.030                0.064               0.049               0.095        
+Residual Std. Error     9.083 (df = 98)      8.916 (df = 94)     8.984 (df = 95)     8.764 (df = 91)   
+F Statistic           4.084** (df = 1; 98) 2.133* (df = 6; 94) 2.041* (df = 5; 95) 2.173** (df = 9; 91)
+=======================================================================================================
+Note:                                                                       *p<0.1; **p<0.05; ***p<0.01
+```
+But, wait... The row that tells you whether Cohort-fixed effects were included in the regression does not always give you the value that you would have expected. In this example the error is in Model (column) 4 where it shows a `No` even though we all know it should be a `Yes`, because we included it just seconds before in `model 4`. So what to do about it? 
+One way to solve this is to wait for an updated version of stargazer which would hopefully solve this. If you don't have the time but need it now, another possible solution to get the right `Yes`/`No` outputs is to pass the regression models in reversed order into the `stargazer()` function like this:
+```
+stargazer(model4, model3, model2, model1,
+          type = "text",
+          omit = c("countries", "birth_cohorts"),
+          omit.labels = c("Country-fixed effects", "Cohort-fixed effects"))
+```
+Weirdly enough this solves the issue. And gives you the correct `Yes`/`No` values:
+```
+=======================================================================================================
+                                                     Dependent variable:                               
+                      ---------------------------------------------------------------------------------
+                                                              y                                        
+                              (1)                  (2)                 (3)                 (4)         
+-------------------------------------------------------------------------------------------------------
+x                            1.587*              1.703*              1.671*              1.772**       
+                            (0.853)              (0.868)             (0.866)             (0.877)       
+                                                                                                       
+Constant                                                                                  -0.884       
+                                                                                         (0.909)       
+                                                                                                       
+-------------------------------------------------------------------------------------------------------
+Country-fixed effects         Yes                  No                  Yes                  No         
+Cohort-fixed effects          Yes                  Yes                 No                   No         
+-------------------------------------------------------------------------------------------------------
+Observations                  100                  100                 100                 100         
+R2                           0.177                0.097               0.120               0.040        
+Adjusted R2                  0.095                0.049               0.064               0.030        
+Residual Std. Error     8.764 (df = 91)      8.984 (df = 95)     8.916 (df = 94)     9.083 (df = 98)   
+F Statistic           2.173** (df = 9; 91) 2.041* (df = 5; 95) 2.133* (df = 6; 94) 4.084** (df = 1; 98)
+=======================================================================================================
+Note:                                                                       *p<0.1; **p<0.05; ***p<0.01
 ```
 
+However, this leaves you with the issue that the models do not appear in the order that you originally wanted them to appear in the regression table. This is where the code from this repository comes into play. `reverse_stargazer_table.py` is a Python script that can reverse multiple text files containing LaTeX code and reverse its columns such that the models will appear in the LaTeX Regression Table as originally intended and without the buggy `Yes`/`No` values.
+The final output after having run `reverse_stargazer_table.py` to reverse the columns is a text file with LaTeX code that if you include into a LaTeX file would produce a LaTeX regression table similar to the following output:
 ```
-
-One possible solution to get the right `Yes`/`No` outputs is to pass the regression models in reversed order into the `stargazer()` function. However, this leaves you with the issue that the models do not appear in the order that you originally wanted them to appear in the regression table. This is where the code from this repository comes into play. `reverse_stargazer_table.py` is a Python script that can reverse multiple text files containing LaTeX code and reverse its columns such that the models will appear in the LaTeX Regression Table as originally intended and without the buggy `Yes`/`No` values.
+=======================================================================================================
+                                                     Dependent variable:                               
+                      ---------------------------------------------------------------------------------
+                                                              y                                        
+                              (1)                  (2)                 (3)                 (4)         
+-------------------------------------------------------------------------------------------------------
+x                           1.772**              1.671*              1.703*               1.587*       
+                            (0.877)              (0.866)             (0.868)             (0.853)       
+                                                                                                       
+Constant                     -0.884                                                                    
+                            (0.909)                                                                    
+                                                                                                       
+-------------------------------------------------------------------------------------------------------
+Country-fixed effects          No                  Yes                 No                  Yes         
+Cohort-fixed effects           No                  No                  Yes                 Yes         
+-------------------------------------------------------------------------------------------------------
+Observations                  100                  100                 100                 100         
+R2                           0.040                0.120               0.097               0.177        
+Adjusted R2                  0.030                0.064               0.049               0.095        
+Residual Std. Error     9.083 (df = 98)      8.916 (df = 94)     8.984 (df = 95)     8.764 (df = 91)   
+F Statistic           4.084** (df = 1; 98) 2.133* (df = 6; 94) 2.041* (df = 5; 95) 2.173** (df = 9; 91)
+=======================================================================================================
+Note:                                                                       *p<0.1; **p<0.05; ***p<0.01
+```
 
 ## Sounds great. What do I have to do?
-* Set up your `stargazer()` function in R. Make sure to reverse the models like this: `stargazer(model.4, model.3, model.2, model.1, ...)`. Don't forget to also reverse the standard errors if you are using robust standard errors.
+* Set up your `stargazer()` function in R and assign it to a variable, which I called here `latex_code_as_text`. Also make sure to reverse the models and specify the `type` as `latex`. In summary with the four models from the previous example this could look like this: 
+* ```latex_code_as_text <- stargazer(model.4, model.3, model.2, model.1, type="latex", omit = c("countries", "birth_cohorts"), omit.labels = c("Country-fixed effects", "Cohort-fixed effects"))```. Don't forget to also reverse the standard errors if you are using robust standard errors.
 * Save the output of the `stargazer()` function as a .txt file. This could be one possible way to do so: ```fileConn<-file("C:/your/file/path/filename.txt")
-writeLines(txt, fileConn)
-close(fileConn)```
+writeLines(latex_code_as_text, fileConn)  
+close(fileConn)``` 
 * If you want to reverse the columns of multiple stargazer regression tables at the same time, no problem, just make sure to save them all in the same directory.
 * **Attention**: Also make sure that no other .txt files are in the same folder as this will throw an error when executing the code. Other filetypes such as .xlsx etc. should not be a problem. They will just be skipped.
 * Next, execute the `reverse_stargazer_table.py` file
 * The script will ask for two user inputs that you will have to type in:
     1. The filepath where you have saved the .txt files that include the latex code for the regression tables. For example, your filepath could look like this: `C:/your/file/path/`. You don't have to add the actual file names in the path.
     2. The filepath where you want to save the updated .txt files. **Attention**: If using the same filepath as where the old .txt files were saved, they will be overwritten.
-* That's it. Enjoy your Regression Tables with reversed columns order.
+* That's it. Enjoy your Regression Tables with reversed column order.
