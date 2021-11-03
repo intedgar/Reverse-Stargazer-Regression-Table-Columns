@@ -27,7 +27,7 @@ model2 <- lm(y ~ x + countries - 1)
 model3 <- lm(y ~ x + birth_cohorts - 1)
 model4 <- lm(y ~ x + countries + birth_cohorts - 1)
 ```
-Of course, you want to not only look at your regression models in R (how boring), but also want to create some beautifully formatted LaTeX tables with Stargazer. This could look like this:
+Of course, you want to not only look at your regression models in R (how boring), but also want to create some beautifully formatted LaTeX tables with Stargazer. The code to do this could look like this:
 ```
 stargazer(model1, model2, model3, model4,
           type = "text")
