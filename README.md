@@ -137,16 +137,23 @@ writeLines(latex_code_as_text, fileConn)
 close(fileConn)``` 
 * If you want to reverse the columns of multiple stargazer regression tables at the same time, no problem, just make sure to save them all in the same directory.
 * **Attention**: Also make sure that no other .txt files are in the same folder as this will throw an error when executing the code. Other filetypes such as .xlsx etc. should not be a problem. They will just be skipped.
-* Download the reverse_stargazer folder and store it in a working directory of your choice
-* In the same working directory create a new python file in which you write the following code:
- ```
- import reverse_stargazer_tables as rst
- rst.reverse()
- ```
-* Next, execute the .py file that you just created
-* The script will ask for two user inputs that you will have to type in:
-    1. The filepath where you have saved the .txt files that include the latex code for the regression tables. For example, your filepath could look like this: `C:/your/file/path/`. You don't have to add the actual file names in the path.
-    2. The filepath where you want to save the updated .txt files. **Attention**: If using the same filepath as where the old .txt files were saved, they will be overwritten.
+* Download the reverse_stargazer folder and store it in a working directory of your choice.
+* In the same working directory create a new python file in which you do the following  (explained in detail in example.py)
+    ```
+    import revregtable as rrt
+    import os
+    path = "example_txt_files"
+
+    files = os.listdir(path)
+    txt_files = (file for file in files if ".txt" in file)
+    
+    for file in txt_files:
+        rt = rrt.read_reg_tbl_txt(f"{path}/{file}")
+        #rt.show()
+        rt.reverse()
+        #rt.show()
+        rt.save_to_txt(f"{path}/{file}")
+    ```
 * That's it. Enjoy your Regression Tables with reversed column order.
 
 ## Some comments
